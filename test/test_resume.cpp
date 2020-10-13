@@ -1081,6 +1081,14 @@ TORRENT_TEST(merkle_trees)
 	p.ti = generate_torrent();
 	p.save_path = ".";
 
+	std::vector<std::vector<char>> piece_layers;
+
+	for (file_index_t const i : p.ti->files().file_range())
+	{
+		auto const pspan = p.ti->piece_layer(i);
+		piece_layers.emplace_back(pspan.begin(), pspan.end());
+	}
+
 	lt::session ses(settings());
 	auto h = ses.add_torrent(p);
 
@@ -1095,15 +1103,17 @@ TORRENT_TEST(merkle_trees)
 
 	TEST_EQUAL(a->params.merkle_trees.size(), 3);
 	TEST_EQUAL(a->params.merkle_tree_mask.size(), 3);
-	TEST_EQUAL(p.ti->internal_merkle_trees().size(), 3);
+
+	auto const pl = h.piece_layers();
+	TEST_CHECK(pl.size() == piece_layers.size());
+
 	for (file_index_t const i : p.ti->files().file_range())
 	{
-		// use stuctured binding in C++17
-		std::vector<bool> mask;
-		std::vector<sha256_hash> sparse_tree;
-		std::tie(sparse_tree, mask) = p.ti->internal_merkle_trees()[i].build_sparse_vector();
-		TEST_CHECK(a->params.merkle_trees[i] == sparse_tree);
-		TEST_CHECK(a->params.merkle_tree_mask[i] == mask);
+		TEST_CHECK(pl[int(i)].size() == piece_layers[int(i)].size() / lt::sha256_hash::size());
+		for (int p = 0; p < int(pl.size()); ++p)
+			TEST_CHECK(pl[int(i)][p] == lt::sha256_hash(piece_layers[int(i)].data() + p * lt::sha256_hash::size()));
+		auto const& m = a->params.merkle_tree_mask[i];
+		TEST_CHECK(std::count(m.begin(), m.end(), true) == int(p.merkle_trees[i].size()));
 	}
 }
 

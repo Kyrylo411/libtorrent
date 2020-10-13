@@ -851,6 +851,12 @@ namespace aux {
 		// by being added by magnet link
 		std::shared_ptr<const torrent_info> torrent_file() const;
 
+		// returns the piece layers for all files in the torrent. If this is a
+		// v1 torrent (and doesn't have any piece layers) it returns an empty
+		// vector. This is a blocking call that will synchronize with the
+		// libtorrent network thread.
+		std::vector<std::vector<sha256_hash>> piece_layers() const;
+
 #if TORRENT_ABI_VERSION == 1
 
 		// ================ start deprecation ============
