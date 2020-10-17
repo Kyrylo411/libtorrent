@@ -1080,17 +1080,7 @@ namespace {
 		return ret;
 	}
 #endif
-/*
-	aux::vector<aux::vector<sha256_hash>, file_index_t>& torrent_info::internal_merkle_trees()
-	{
-		return m_merkle_trees;
-	}
 
-	aux::vector<aux::merkle_tree, file_index_t> const& torrent_info::internal_merkle_trees() const
-	{
-		return m_merkle_trees;
-	}
-*/
 	string_view torrent_info::ssl_cert() const
 	{
 		if (!(m_flags & ssl_torrent)) return "";
@@ -1497,6 +1487,15 @@ namespace {
 		if (f >= m_piece_layers.end_index()) return {};
 		auto const indices = m_piece_layers[f];
 		return span<char const>(m_piece_layer_hashes.data() + indices.first, indices.second);
+	}
+
+	void torrent_info::free_piece_layers()
+	{
+		m_piece_layers.clear();
+		m_piece_layers.shrink_to_fit();
+
+		m_piece_layer_hashes.clear();
+		m_piece_layer_hashes.shrink_to_fit();
 	}
 
 	void torrent_info::internal_set_creator(string_view const c)

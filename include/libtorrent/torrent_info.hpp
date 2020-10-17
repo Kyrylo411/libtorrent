@@ -588,6 +588,12 @@ TORRENT_VERSION_NAMESPACE_3
 		// The span size is divisible by 32, the size of a SHA256 hash.
 		span<char const> piece_layer(file_index_t) const;
 
+		// clears the piece layers from the torrent_info. This is done by the
+		// session when a torrent is added, to avoid storing it twice. The piece
+		// layer (or other hashes part of the merkle tree) are stored in the
+		// internal torrent object.
+		void free_piece_layers();
+
 		// internal
 		void internal_set_creator(string_view);
 		void internal_set_creation_date(std::time_t);

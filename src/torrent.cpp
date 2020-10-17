@@ -7298,6 +7298,7 @@ namespace {
 					, torrent_status::error_file_metadata);
 			}
 		}
+		m_torrent_file->free_piece_layers();
 	}
 
 	bool torrent::set_metadata(span<char const> metadata_buf)
