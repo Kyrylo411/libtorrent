@@ -1109,10 +1109,10 @@ TORRENT_TEST(merkle_trees)
 
 	for (file_index_t const i : p.ti->files().file_range())
 	{
-		auto const& one_layer = pl[int(i)];
-		TEST_CHECK(one_layer.size() == piece_layers[int(i)].size() / lt::sha256_hash::size());
-		for (int p = 0; p < int(one_layer.size()); ++p)
-			TEST_CHECK(one_layer[p] == lt::sha256_hash(piece_layers[int(i)].data() + p * lt::sha256_hash::size()));
+		auto const& one_layer = pl[std::size_t(int(i))];
+		TEST_CHECK(one_layer.size() == piece_layers[std::size_t(int(i))].size() / lt::sha256_hash::size());
+		for (int piece = 0; piece < int(one_layer.size()); ++piece)
+			TEST_CHECK(one_layer[std::size_t(piece)] == lt::sha256_hash(piece_layers[std::size_t(int(i))].data() + piece * lt::sha256_hash::size()));
 		auto const& m = a->params.merkle_tree_mask[i];
 		TEST_CHECK(std::count(m.begin(), m.end(), true) == int(a->params.merkle_trees[i].size()));
 	}
