@@ -510,7 +510,7 @@ namespace {
 				span<char const> pieces = ti.piece_layer(i);
 
 				piece_index_t::diff_type p{0};
-				for (int h = 0; h < int(pieces.size()); h += sha256_hash::size())
+				for (int h = 0; h < int(pieces.size()); h += int(sha256_hash::size()))
 					set_hash2(i, p++, sha256_hash(pieces.data() + h));
 			}
 		}

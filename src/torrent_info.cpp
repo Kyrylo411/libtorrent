@@ -1472,7 +1472,7 @@ namespace {
 
 			m_piece_layer_hashes.resize(m_piece_layer_hashes.size() + hashes.size());
 			std::copy(hashes.begin(), hashes.end(), m_piece_layer_hashes.begin() + start);
-			m_piece_layers[i] = std::make_pair(start, hashes.size());
+			m_piece_layers[i] = std::make_pair(start, int(hashes.size()));
 		}
 
 		m_flags |= v2_has_piece_hashes;
@@ -1484,7 +1484,7 @@ namespace {
 		TORRENT_ASSERT_PRECOND(f >= file_index_t(0));
 		if (f >= m_piece_layers.end_index()) return {};
 		auto const indices = m_piece_layers[f];
-		return span<char const>(m_piece_layer_hashes.data() + indices.first, indices.second);
+		return {m_piece_layer_hashes.data() + indices.first, indices.second};
 	}
 
 	void torrent_info::free_piece_layers()
